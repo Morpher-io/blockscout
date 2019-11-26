@@ -2593,10 +2593,10 @@ defmodule Explorer.ChainTest do
 
       %TokenTransfer{transaction_hash: transaction_hash, log_index: log_index} =
         insert(:token_transfer,
-        transaction: transaction,
-        block: transaction.block,
-        block_number: transaction.block_number
-      )
+          transaction: transaction,
+          block: transaction.block,
+          block_number: transaction.block_number
+        )
 
       assert [%TokenTransfer{transaction_hash: ^transaction_hash, log_index: ^log_index}] =
                Chain.transaction_to_token_transfers(transaction.hash)
