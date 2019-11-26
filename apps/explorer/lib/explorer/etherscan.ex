@@ -324,7 +324,7 @@ defmodule Explorer.Etherscan do
         on: tt.transaction_hash == t.hash and tt.block_number == t.block_number and tt.block_hash == t.block_hash,
         inner_join: tkn in assoc(tt, :token),
         inner_join: b in assoc(t, :block),
-        where: tt.from_address_hash == ^address_hash and b.number == tt.block_number and b.hash == t.block_hash,
+        where: tt.from_address_hash == ^address_hash,
         or_where: tt.to_address_hash == ^address_hash,
         order_by: [{^options.order_by_direction, t.block_number}],
         limit: ^options.page_size,
