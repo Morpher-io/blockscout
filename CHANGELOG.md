@@ -12,6 +12,7 @@
 
 ### Fixes
 - [#2872](https://github.com/poanetwork/blockscout/pull/2872) - do not remove token transfers
+- [#2871](https://github.com/poanetwork/blockscout/pull/2871) - do not remove logs
 - [#2864](https://github.com/poanetwork/blockscout/pull/2864) - add token instance metadata type check
 - [#2855](https://github.com/poanetwork/blockscout/pull/2855) - Fix favicons load
 - [#2854](https://github.com/poanetwork/blockscout/pull/2854) - Fix all npm vulnerabilities

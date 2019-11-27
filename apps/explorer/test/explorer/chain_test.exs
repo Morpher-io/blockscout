@@ -236,14 +236,26 @@ defmodule Explorer.ChainTest do
         |> insert(to_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction1, index: 1, address: address)
+      insert(:log,
+        block: transaction1.block,
+        block_number: transaction1.block_number,
+        transaction: transaction1,
+        index: 1,
+        address: address
+      )
 
       transaction2 =
         :transaction
         |> insert(from_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction2, index: 2, address: address)
+      insert(:log,
+        block: transaction2.block,
+        block_number: transaction2.block_number,
+        transaction: transaction2,
+        index: 2,
+        address: address
+      )
 
       assert Enum.count(Chain.address_to_logs(address_hash)) == 2
     end
@@ -256,10 +268,18 @@ defmodule Explorer.ChainTest do
         |> insert(to_address: address)
         |> with_block()
 
-      log1 = insert(:log, transaction: transaction, index: 1, address: address)
+      log1 = insert(:log, transaction: transaction, index: 1, address: address, block_number: transaction.block_number)
 
       2..51
-      |> Enum.map(fn index -> insert(:log, transaction: transaction, index: index, address: address) end)
+      |> Enum.map(fn index ->
+        insert(:log,
+          block: transaction.block,
+          transaction: transaction,
+          index: index,
+          address: address,
+          block_number: transaction.block_number
+        )
+      end)
       |> Enum.map(& &1.index)
 
       paging_options1 = %PagingOptions{page_size: 1}
@@ -279,14 +299,27 @@ defmodule Explorer.ChainTest do
         |> insert(to_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction1, index: 1, address: address)
+      insert(:log,
+        block: transaction1.block,
+        transaction: transaction1,
+        index: 1,
+        address: address,
+        block_number: transaction1.block_number
+      )
 
       transaction2 =
         :transaction
         |> insert(from_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction2, index: 2, address: address, first_topic: "test")
+      insert(:log,
+        block: transaction2.block,
+        transaction: transaction2,
+        index: 2,
+        address: address,
+        first_topic: "test",
+        block_number: transaction2.block_number
+      )
 
       [found_log] = Chain.address_to_logs(address_hash, topic: "test")
 
@@ -301,14 +334,27 @@ defmodule Explorer.ChainTest do
         |> insert(to_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction1, index: 1, address: address, fourth_topic: "test")
+      insert(:log,
+        block: transaction1.block,
+        block_number: transaction1.block_number,
+        transaction: transaction1,
+        index: 1,
+        address: address,
+        fourth_topic: "test"
+      )
 
       transaction2 =
         :transaction
         |> insert(from_address: address)
         |> with_block()
 
-      insert(:log, transaction: transaction2, index: 2, address: address)
+      insert(:log,
+        block: transaction2.block,
+        block_number: transaction2.block.number,
+        transaction: transaction2,
+        index: 2,
+        address: address
+      )
 
       [found_log] = Chain.address_to_logs(address_hash, topic: "test")
 
@@ -1311,6 +1357,7 @@ defmodule Explorer.ChainTest do
       logs: %{
         params: [
           %{
+            block_hash: "0xf6b4b8c88df3ebd252ec476328334dc026cf66606a84fb769b3d3cbccc8471bd",
             address_hash: "0x8bf38d4764929064f2d4d3a56520a76ab3df415b",
             data: "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
             first_topic: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
@@ -2528,7 +2575,8 @@ defmodule Explorer.ChainTest do
         |> insert()
         |> with_block()
 
-      %Log{transaction_hash: transaction_hash, index: index} = insert(:log, transaction: transaction)
+      %Log{transaction_hash: transaction_hash, index: index} =
+        insert(:log, transaction: transaction, block: transaction.block, block_number: transaction.block_number)
 
       assert [%Log{transaction_hash: ^transaction_hash, index: ^index}] = Chain.transaction_to_logs(transaction.hash)
     end
@@ -2539,11 +2587,24 @@ defmodule Explorer.ChainTest do
         |> insert()
         |> with_block()
 
-      log = insert(:log, transaction: transaction, index: 1)
+      log =
+        insert(:log,
+          transaction: transaction,
+          index: 1,
+          block: transaction.block,
+          block_number: transaction.block_number
+        )
 
       second_page_indexes =
         2..51
-        |> Enum.map(fn index -> insert(:log, transaction: transaction, index: index) end)
+        |> Enum.map(fn index ->
+          insert(:log,
+            transaction: transaction,
+            index: index,
+            block: transaction.block,
+            block_number: transaction.block_number
+          )
+        end)
         |> Enum.map(& &1.index)
 
       assert second_page_indexes ==
@@ -2558,7 +2619,7 @@ defmodule Explorer.ChainTest do
         |> insert()
         |> with_block()
 
-      insert(:log, transaction: transaction)
+      insert(:log, transaction: transaction, block: transaction.block, block_number: transaction.block_number)
 
       assert [%Log{address: %Address{}, transaction: %Transaction{}}] =
                Chain.transaction_to_logs(
