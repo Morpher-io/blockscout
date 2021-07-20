@@ -49,9 +49,7 @@ defmodule BlockScout.Mixfile do
   end
 
   defp env_aliases(_env) do
-    [
-      compile: "compile --warnings-as-errors"
-    ]
+    []
   end
 
   # Dependencies can be Hex packages:
